@@ -1,0 +1,107 @@
+id: 9a38b5c3-612
+name: GitHub to Slack Notifier
+description: Monitor GitHub PRs and notify team on Slack
+version: '1.0'
+author: shield
+steps:
+- id: fetch_events
+  name: Fetch GitHub Events
+  type: tool_call
+  description: ''
+  tool_name: github_list_events
+  parameters:
+    repo: '{{repo}}'
+    event_type: push
+  model_task_category: general
+  prompt_template: ''
+  url: ''
+  method: POST
+  headers: {}
+  condition: ''
+  delay_seconds: 0.0
+  depends_on: []
+  on_success:
+  - analyze
+  on_failure: []
+  status: pending
+  result: null
+  error: null
+  started_at: null
+  completed_at: null
+  duration_ms: 0.0
+  agent_id: pipeline-agent
+  session_id: ''
+  security_decision: null
+  audit_event_id: null
+- id: analyze
+  name: Analyze Events
+  type: llm_call
+  description: Summarize the events
+  tool_name: ''
+  parameters: {}
+  model_task_category: summarization
+  prompt_template: 'Summarize these GitHub events concisely:
+
+    {{step_fetch_events}}'
+  url: ''
+  method: POST
+  headers: {}
+  condition: ''
+  delay_seconds: 0.0
+  depends_on:
+  - fetch_events
+  on_success:
+  - notify
+  on_failure: []
+  status: pending
+  result: null
+  error: null
+  started_at: null
+  completed_at: null
+  duration_ms: 0.0
+  agent_id: pipeline-agent
+  session_id: ''
+  security_decision: null
+  audit_event_id: null
+- id: notify
+  name: Notify on Slack
+  type: tool_call
+  description: ''
+  tool_name: slack_send_message
+  parameters:
+    channel: '{{slack_channel}}'
+    message: '{{step_analyze.content}}'
+  model_task_category: general
+  prompt_template: ''
+  url: ''
+  method: POST
+  headers: {}
+  condition: ''
+  delay_seconds: 0.0
+  depends_on:
+  - analyze
+  on_success: []
+  on_failure: []
+  status: pending
+  result: null
+  error: null
+  started_at: null
+  completed_at: null
+  duration_ms: 0.0
+  agent_id: pipeline-agent
+  session_id: ''
+  security_decision: null
+  audit_event_id: null
+tags:
+- github
+- slack
+- notification
+- monitoring
+trigger: manual
+schedule: ''
+created_at: '2026-02-26T13:38:52.903204'
+updated_at: '2026-02-26T13:38:52.900206'
+status: draft
+run_count: 0
+last_run: null
+last_duration_ms: 0.0

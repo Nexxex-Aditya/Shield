@@ -1,0 +1,482 @@
+"""
+AgentVault — Database Layer
+Async SQLite database for persistent storage.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import os
+from datetime import datetime
+from typing import Any, Optional
+
+import aiosqlite
+
+logger = logging.getLogger("agentvault.database")
+
+DB_PATH = os.environ.get("AGENTVAULT_DB", "agentvault.db")
+
+
+async def get_db(db_path: str = DB_PATH) -> aiosqlite.Connection:
+    """Get a database connection."""
+    db = await aiosqlite.connect(db_path)
+    db.row_factory = aiosqlite.Row
+    await db.execute("PRAGMA journal_mode=WAL")
+    await db.execute("PRAGMA foreign_keys=ON")
+    return db
+
+
+async def init_db(db_path: str = DB_PATH) -> None:
+    """Initialize database tables."""
+    db = await get_db(db_path)
+    try:
+        await db.executescript("""
+            CREATE TABLE IF NOT EXISTS audit_events (
+                id TEXT PRIMARY KEY,
+                timestamp TEXT NOT NULL,
+                agent_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                trace_id TEXT NOT NULL,
+                action_name TEXT NOT NULL,
+                tool_name TEXT NOT NULL,
+                parameters TEXT DEFAULT '{}',
+                decision TEXT NOT NULL,
+                reasoning TEXT DEFAULT '',
+                confidence_score REAL,
+                drift_score REAL,
+                input_hash TEXT DEFAULT '',
+                output_hash TEXT DEFAULT '',
+                result TEXT,
+                log_level TEXT DEFAULT 'standard',
+                event_hash TEXT NOT NULL,
+                previous_hash TEXT NOT NULL
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_audit_agent ON audit_events(agent_id);
+            CREATE INDEX IF NOT EXISTS idx_audit_session ON audit_events(session_id);
+            CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_events(timestamp);
+            CREATE INDEX IF NOT EXISTS idx_audit_decision ON audit_events(decision);
+            CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_events(action_name);
+
+            CREATE TABLE IF NOT EXISTS drift_alerts (
+                id TEXT PRIMARY KEY,
+                agent_id TEXT NOT NULL,
+                timestamp TEXT NOT NULL,
+                deviation_score REAL NOT NULL,
+                alert_level TEXT NOT NULL,
+                baseline_distribution TEXT DEFAULT '{}',
+                current_distribution TEXT DEFAULT '{}',
+                window TEXT DEFAULT '1h',
+                message TEXT DEFAULT ''
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_drift_agent ON drift_alerts(agent_id);
+            CREATE INDEX IF NOT EXISTS idx_drift_level ON drift_alerts(alert_level);
+
+            CREATE TABLE IF NOT EXISTS escalation_queue (
+                id TEXT PRIMARY KEY,
+                agent_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                trace_id TEXT NOT NULL,
+                action_name TEXT NOT NULL,
+                tool_name TEXT NOT NULL,
+                parameters TEXT DEFAULT '{}',
+                reasoning TEXT DEFAULT '',
+                status TEXT DEFAULT 'PENDING',
+                created_at TEXT NOT NULL,
+                resolved_at TEXT,
+                resolved_by TEXT
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_esc_status ON escalation_queue(status);
+
+            CREATE TABLE IF NOT EXISTS agent_profiles (
+                agent_id TEXT PRIMARY KEY,
+                first_seen TEXT NOT NULL,
+                last_active TEXT NOT NULL,
+                total_actions INTEGER DEFAULT 0,
+                allowed INTEGER DEFAULT 0,
+                denied INTEGER DEFAULT 0,
+                escalated INTEGER DEFAULT 0,
+                action_distribution TEXT DEFAULT '{}'
+            );
+        """)
+        await db.commit()
+        logger.info("Database initialized at %s", db_path)
+    finally:
+        await db.close()
+
+
+class DatabaseStore:
+    """Async database operations for AgentVault."""
+
+    def __init__(self, db_path: str = DB_PATH) -> None:
+        self._db_path = db_path
+        self._db: Optional[aiosqlite.Connection] = None
+
+    async def connect(self) -> None:
+        """Initialize and connect to database."""
+        await init_db(self._db_path)
+        self._db = await get_db(self._db_path)
+
+    async def close(self) -> None:
+        """Close database connection."""
+        if self._db:
+            await self._db.close()
+
+    async def _get_db(self) -> aiosqlite.Connection:
+        if not self._db:
+            self._db = await get_db(self._db_path)
+        return self._db
+
+    # ------------------------------------------------------------------
+    # Audit Events
+    # ------------------------------------------------------------------
+
+    async def save_audit_event(self, event: dict) -> None:
+        """Save an audit event to the database."""
+        db = await self._get_db()
+        await db.execute(
+            """INSERT OR REPLACE INTO audit_events
+            (id, timestamp, agent_id, session_id, trace_id, action_name, tool_name,
+             parameters, decision, reasoning, confidence_score, drift_score,
+             input_hash, output_hash, result, log_level, event_hash, previous_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                event["id"],
+                event["timestamp"],
+                event["agent_id"],
+                event["session_id"],
+                event["trace_id"],
+                event["action_name"],
+                event["tool_name"],
+                json.dumps(event.get("parameters", {})),
+                event["decision"],
+                event.get("reasoning", ""),
+                event.get("confidence_score"),
+                event.get("drift_score"),
+                event.get("input_hash", ""),
+                event.get("output_hash", ""),
+                json.dumps(event.get("result")) if event.get("result") else None,
+                event.get("log_level", "standard"),
+                event["event_hash"],
+                event["previous_hash"],
+            ),
+        )
+        await db.commit()
+
+        # Update agent profile
+        await self._update_agent_profile(event["agent_id"], event["decision"], event["action_name"])
+
+    async def query_audit(
+        self,
+        agent_id: Optional[str] = None,
+        decision: Optional[str] = None,
+        action_name: Optional[str] = None,
+        session_id: Optional[str] = None,
+        start_time: Optional[str] = None,
+        end_time: Optional[str] = None,
+        limit: int = 100,
+        offset: int = 0,
+    ) -> list[dict]:
+        """Query audit events with filters."""
+        db = await self._get_db()
+        conditions = []
+        params = []
+
+        if agent_id:
+            conditions.append("agent_id = ?")
+            params.append(agent_id)
+        if decision:
+            conditions.append("decision = ?")
+            params.append(decision)
+        if action_name:
+            conditions.append("action_name = ?")
+            params.append(action_name)
+        if session_id:
+            conditions.append("session_id = ?")
+            params.append(session_id)
+        if start_time:
+            conditions.append("timestamp >= ?")
+            params.append(start_time)
+        if end_time:
+            conditions.append("timestamp <= ?")
+            params.append(end_time)
+
+        where = " AND ".join(conditions) if conditions else "1=1"
+        query = f"SELECT * FROM audit_events WHERE {where} ORDER BY timestamp DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+
+        cursor = await db.execute(query, params)
+        rows = await cursor.fetchall()
+
+        return [self._row_to_dict(row) for row in rows]
+
+    async def get_session_replay(self, session_id: str) -> list[dict]:
+        """Get all events for a session in chronological order."""
+        db = await self._get_db()
+        cursor = await db.execute(
+            "SELECT * FROM audit_events WHERE session_id = ? ORDER BY timestamp ASC",
+            (session_id,),
+        )
+        rows = await cursor.fetchall()
+        return [self._row_to_dict(row) for row in rows]
+
+    async def verify_chain(self) -> dict:
+        """Verify the hash chain integrity in the database."""
+        db = await self._get_db()
+        cursor = await db.execute(
+            "SELECT * FROM audit_events ORDER BY timestamp ASC"
+        )
+        rows = await cursor.fetchall()
+
+        if not rows:
+            return {"valid": True, "count": 0, "break_index": None}
+
+        import hashlib
+
+        prev_hash = "GENESIS"
+        for i, row in enumerate(rows):
+            event = self._row_to_dict(row)
+
+            if event["previous_hash"] != prev_hash:
+                return {"valid": False, "count": len(rows), "break_index": i}
+
+            prev_hash = event["event_hash"]
+
+        return {"valid": True, "count": len(rows), "break_index": None}
+
+    # ------------------------------------------------------------------
+    # Drift Alerts
+    # ------------------------------------------------------------------
+
+    async def save_drift_alert(self, alert: dict) -> None:
+        """Save a drift alert."""
+        db = await self._get_db()
+        await db.execute(
+            """INSERT INTO drift_alerts
+            (id, agent_id, timestamp, deviation_score, alert_level,
+             baseline_distribution, current_distribution, window, message)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                alert["id"],
+                alert["agent_id"],
+                alert["timestamp"],
+                alert["deviation_score"],
+                alert["alert_level"],
+                json.dumps(alert.get("baseline_distribution", {})),
+                json.dumps(alert.get("current_distribution", {})),
+                alert.get("window", "1h"),
+                alert.get("message", ""),
+            ),
+        )
+        await db.commit()
+
+    async def query_drift_alerts(
+        self,
+        agent_id: Optional[str] = None,
+        level: Optional[str] = None,
+        limit: int = 50,
+    ) -> list[dict]:
+        """Query drift alerts."""
+        db = await self._get_db()
+        conditions = []
+        params = []
+
+        if agent_id:
+            conditions.append("agent_id = ?")
+            params.append(agent_id)
+        if level:
+            conditions.append("alert_level = ?")
+            params.append(level)
+
+        where = " AND ".join(conditions) if conditions else "1=1"
+        query = f"SELECT * FROM drift_alerts WHERE {where} ORDER BY timestamp DESC LIMIT ?"
+        params.append(limit)
+
+        cursor = await db.execute(query, params)
+        rows = await cursor.fetchall()
+        return [self._row_to_dict(row) for row in rows]
+
+    # ------------------------------------------------------------------
+    # Escalation Queue
+    # ------------------------------------------------------------------
+
+    async def save_escalation(self, escalation: dict) -> None:
+        """Save an escalation item."""
+        db = await self._get_db()
+        await db.execute(
+            """INSERT OR REPLACE INTO escalation_queue
+            (id, agent_id, session_id, trace_id, action_name, tool_name,
+             parameters, reasoning, status, created_at, resolved_at, resolved_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                escalation["id"],
+                escalation["agent_id"],
+                escalation["session_id"],
+                escalation["trace_id"],
+                escalation["action_name"],
+                escalation["tool_name"],
+                json.dumps(escalation.get("parameters", {})),
+                escalation.get("reasoning", ""),
+                escalation.get("status", "PENDING"),
+                escalation.get("created_at", datetime.utcnow().isoformat()),
+                escalation.get("resolved_at"),
+                escalation.get("resolved_by"),
+            ),
+        )
+        await db.commit()
+
+    async def get_escalations(self, status: Optional[str] = None) -> list[dict]:
+        """Get escalation queue items."""
+        db = await self._get_db()
+        if status:
+            cursor = await db.execute(
+                "SELECT * FROM escalation_queue WHERE status = ? ORDER BY created_at DESC",
+                (status,),
+            )
+        else:
+            cursor = await db.execute(
+                "SELECT * FROM escalation_queue ORDER BY created_at DESC"
+            )
+        rows = await cursor.fetchall()
+        return [self._row_to_dict(row) for row in rows]
+
+    async def resolve_escalation(
+        self, escalation_id: str, approved: bool, resolved_by: str = "admin"
+    ) -> Optional[dict]:
+        """Resolve an escalation."""
+        db = await self._get_db()
+        status = "APPROVED" if approved else "REJECTED"
+        now = datetime.utcnow().isoformat()
+
+        await db.execute(
+            "UPDATE escalation_queue SET status = ?, resolved_at = ?, resolved_by = ? WHERE id = ?",
+            (status, now, resolved_by, escalation_id),
+        )
+        await db.commit()
+
+        cursor = await db.execute(
+            "SELECT * FROM escalation_queue WHERE id = ?", (escalation_id,)
+        )
+        row = await cursor.fetchone()
+        return self._row_to_dict(row) if row else None
+
+    # ------------------------------------------------------------------
+    # Agent Profiles
+    # ------------------------------------------------------------------
+
+    async def _update_agent_profile(
+        self, agent_id: str, decision: str, action_name: str
+    ) -> None:
+        """Update agent profile statistics."""
+        db = await self._get_db()
+        now = datetime.utcnow().isoformat()
+
+        # Check if profile exists
+        cursor = await db.execute(
+            "SELECT * FROM agent_profiles WHERE agent_id = ?", (agent_id,)
+        )
+        row = await cursor.fetchone()
+
+        if row:
+            profile = self._row_to_dict(row)
+            dist = json.loads(profile.get("action_distribution", "{}"))
+            dist[action_name] = dist.get(action_name, 0) + 1
+
+            incr = {
+                "allowed": 1 if decision == "ALLOW" else 0,
+                "denied": 1 if decision == "DENY" else 0,
+                "escalated": 1 if decision == "ESCALATE" else 0,
+            }
+
+            await db.execute(
+                """UPDATE agent_profiles SET
+                last_active = ?, total_actions = total_actions + 1,
+                allowed = allowed + ?, denied = denied + ?, escalated = escalated + ?,
+                action_distribution = ?
+                WHERE agent_id = ?""",
+                (now, incr["allowed"], incr["denied"], incr["escalated"],
+                 json.dumps(dist), agent_id),
+            )
+        else:
+            dist = {action_name: 1}
+            await db.execute(
+                """INSERT INTO agent_profiles
+                (agent_id, first_seen, last_active, total_actions,
+                 allowed, denied, escalated, action_distribution)
+                VALUES (?, ?, ?, 1, ?, ?, ?, ?)""",
+                (
+                    agent_id, now, now,
+                    1 if decision == "ALLOW" else 0,
+                    1 if decision == "DENY" else 0,
+                    1 if decision == "ESCALATE" else 0,
+                    json.dumps(dist),
+                ),
+            )
+
+        await db.commit()
+
+    async def get_agents(self) -> list[dict]:
+        """Get all agent profiles."""
+        db = await self._get_db()
+        cursor = await db.execute(
+            "SELECT * FROM agent_profiles ORDER BY last_active DESC"
+        )
+        rows = await cursor.fetchall()
+
+        results = []
+        for row in rows:
+            d = self._row_to_dict(row)
+            d["action_distribution"] = json.loads(d.get("action_distribution", "{}"))
+            results.append(d)
+        return results
+
+    # ------------------------------------------------------------------
+    # Stats
+    # ------------------------------------------------------------------
+
+    async def get_stats(self) -> dict:
+        """Get aggregate dashboard statistics."""
+        db = await self._get_db()
+
+        total = await (await db.execute("SELECT COUNT(*) FROM audit_events")).fetchone()
+        allowed = await (
+            await db.execute("SELECT COUNT(*) FROM audit_events WHERE decision = 'ALLOW'")
+        ).fetchone()
+        denied = await (
+            await db.execute("SELECT COUNT(*) FROM audit_events WHERE decision = 'DENY'")
+        ).fetchone()
+        escalated = await (
+            await db.execute("SELECT COUNT(*) FROM audit_events WHERE decision = 'ESCALATE'")
+        ).fetchone()
+        drift_count = await (
+            await db.execute("SELECT COUNT(*) FROM drift_alerts")
+        ).fetchone()
+        agents = await (
+            await db.execute("SELECT COUNT(*) FROM agent_profiles")
+        ).fetchone()
+
+        chain = await self.verify_chain()
+
+        return {
+            "total_actions": total[0] if total else 0,
+            "allowed": allowed[0] if allowed else 0,
+            "denied": denied[0] if denied else 0,
+            "escalated": escalated[0] if escalated else 0,
+            "drift_alerts": drift_count[0] if drift_count else 0,
+            "active_agents": agents[0] if agents else 0,
+            "chain_healthy": chain["valid"],
+        }
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _row_to_dict(row) -> dict:
+        """Convert a sqlite Row to a dict."""
+        if row is None:
+            return {}
+        return dict(row)

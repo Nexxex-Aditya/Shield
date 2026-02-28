@@ -1,0 +1,187 @@
+agent: "*"
+default: deny
+description: "AgentVault v0.2 — Production security policy with advanced features"
+
+rules:
+  # ── Read Operations (Safe) ──────────────────────────────────────────
+  - action: "read_file"
+    decision: allow
+    description: "Allow reading files"
+    log_level: standard
+
+  - action: "read_*"
+    decision: allow
+    description: "Allow all read operations"
+    log_level: standard
+
+  - action: "list_*"
+    decision: allow
+    description: "Allow listing operations"
+    log_level: minimal
+
+  - action: "search_*"
+    decision: allow
+    description: "Allow search operations"
+    log_level: standard
+
+  # ── Analysis Operations (Sandboxed) ─────────────────────────────────
+  - action: "analyze_*"
+    decision: allow
+    description: "Allow analysis operations (sandboxed)"
+    sandbox:
+      timeout: 60
+      memory_mb: 512
+      read_only: true
+    log_level: full
+
+  # ── Write Operations (Rate Limited) ─────────────────────────────────
+  - action: "write_file"
+    decision: allow
+    description: "Allow writing files — rate limited"
+    rate_limit:
+      max: 20
+      window: 60
+    log_level: full
+
+  - action: "write_*"
+    decision: allow
+    description: "Allow write operations — rate limited"
+    rate_limit:
+      max: 20
+      window: 60
+    log_level: full
+
+  - action: "create_*"
+    decision: allow
+    description: "Allow create operations — rate limited"
+    rate_limit:
+      max: 10
+      window: 60
+    log_level: full
+
+  # ── Destructive Operations (DENIED) ─────────────────────────────────
+  - action: "delete_*"
+    decision: deny
+    description: "NEVER allow delete operations"
+    log_level: critical
+
+  - action: "drop_*"
+    decision: deny
+    description: "NEVER allow drop operations"
+    log_level: critical
+
+  - action: "purge_*"
+    decision: deny
+    description: "NEVER allow purge operations"
+    log_level: critical
+
+  - action: "truncate_*"
+    decision: deny
+    description: "NEVER allow truncate operations"
+    log_level: critical
+
+  # ── Communication (Escalated) ───────────────────────────────────────
+  - action: "send_*"
+    decision: escalate
+    description: "Sending requires human approval"
+    log_level: critical
+
+  - action: "email_*"
+    decision: escalate
+    description: "Email operations require human approval"
+    log_level: critical
+
+  - action: "publish_*"
+    decision: escalate
+    description: "Publishing requires human approval"
+    log_level: critical
+
+  # ── Code Execution (Sandboxed) ──────────────────────────────────────
+  - action: "execute_code"
+    decision: allow
+    description: "Allow code execution in strict sandbox"
+    sandbox:
+      timeout: 30
+      memory_mb: 256
+      read_only: true
+    log_level: critical
+
+  - action: "api_call"
+    decision: allow
+    description: "Allow API calls to whitelisted domains"
+    rate_limit:
+      max: 30
+      window: 60
+    log_level: full
+
+  # ── Admin Operations (DENIED for all agents) ────────────────────────
+  - action: "admin_*"
+    decision: deny
+    description: "Admin operations are never allowed through the gateway"
+    log_level: critical
+
+  - action: "sudo_*"
+    decision: deny
+    description: "Sudo operations are never allowed"
+    log_level: critical
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Advanced Security Configuration
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Honeypot — canary tools that detect malicious intent
+honeypot:
+  auto_quarantine: true
+  canaries:
+    - tool: "internal_admin_panel"
+      description: "Fake admin panel access tool"
+      category: "admin"
+    - tool: "get_credentials"
+      description: "Fake credential retrieval"
+      category: "credentials"
+    - tool: "export_all_data"
+      description: "Fake bulk data export"
+      category: "exfiltration"
+    - tool: "disable_security"
+      description: "Fake security disable"
+      category: "security"
+    - tool: "access_database_raw"
+      description: "Fake raw database access"
+      category: "data"
+
+# Chain analysis — forbidden action sequences
+chain_analysis:
+  max_history: 500
+  forbidden_sequences:
+    - pattern: ["read_*", "read_*", "send_*"]
+      description: "Read-then-exfiltrate pattern"
+    - pattern: ["read_*", "write_*", "delete_*"]
+      description: "Read-modify-destroy pattern"
+    - pattern: ["list_*", "read_*", "api_call"]
+      description: "Enumerate-read-exfiltrate pattern"
+    - pattern: ["execute_code", "write_*"]
+      description: "Code execution followed by write"
+
+# Prompt injection guard — block threshold
+prompt_guard:
+  block_threshold: HIGH
+  check_base64: true
+
+# Reputation — scoring configuration
+reputation:
+  initial_score: 50.0
+  trust_thresholds:
+    trusted: 80
+    standard: 40
+    limited: 20
+    untrusted: 0
+
+# Memory firewall — cross-session data smuggling
+memory_firewall:
+  similarity_threshold: 0.8
+  min_value_length: 20
+
+# Semantic matching — synonym groups (loaded by policy engine)
+semantic_matching:
+  enabled: true

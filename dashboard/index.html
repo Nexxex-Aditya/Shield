@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shield — Command Center</title>
+    <meta name="description"
+        content="Shield: The intelligent middleware platform for AI systems. Build, connect, integrate, and monitor everything.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <!-- ═══ SHELL ═══ -->
+    <div class="shell">
+        <!-- ═══ LEFT RAIL ═══ -->
+        <aside class="rail" id="rail">
+            <div class="rail-brand">
+                <div class="brand-mark">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="14" stroke="#ffffff" stroke-width="2.5" />
+                        <path d="M16 6 L16 26 M6 16 L26 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"
+                            opacity="0.4" />
+                        <circle cx="16" cy="16" r="5" stroke="#ffffff" stroke-width="2" />
+                        <circle cx="16" cy="16" r="2" fill="#2563eb" />
+                    </svg>
+                </div>
+                <div class="brand-name">
+                    <span class="brand-title">SHIELD</span>
+                    <span class="brand-tag">v0.3.0</span>
+                </div>
+            </div>
+
+            <div class="rail-section-label">COMMAND</div>
+            <nav class="rail-nav">
+                <a class="rail-link active" data-page="overview" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="7" height="7" rx="1" />
+                        </svg></span>
+                    <span>Command Center</span>
+                </a>
+                <a class="rail-link" data-page="traces" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M3 12h4l3-9 4 18 3-9h4" />
+                        </svg></span>
+                    <span>Traces</span>
+                </a>
+                <a class="rail-link" data-page="agents" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="12" cy="8" r="4" />
+                            <path d="M4 21v-1a6 6 0 0112 0v1" />
+                            <path d="M16 11a4 4 0 014 4v2" />
+                        </svg></span>
+                    <span>Agents</span>
+                </a>
+                <a class="rail-link" data-page="escalations" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M12 2L2 22h20L12 2z" />
+                            <path d="M12 10v4M12 18h.01" />
+                        </svg></span>
+                    <span>Escalations</span>
+                    <span class="rail-badge" id="escBadge" style="display:none">0</span>
+                </a>
+                <a class="rail-link" data-page="pipelines" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="5" cy="6" r="2" />
+                            <circle cx="12" cy="12" r="2" />
+                            <circle cx="19" cy="6" r="2" />
+                            <circle cx="12" cy="20" r="2" />
+                            <path d="M7 7l3 3M17 7l-3 3M12 14v4" />
+                        </svg></span>
+                    <span>Pipelines</span>
+                </a>
+            </nav>
+
+            <div class="rail-section-label">INTELLIGENCE</div>
+            <nav class="rail-nav">
+                <a class="rail-link" data-page="cibil" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M12 2a10 10 0 0110 10" />
+                            <path d="M12 2a10 10 0 00-10 10" />
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M12 8v-2M12 18v-2M8 12H6M18 12h-2" />
+                        </svg></span>
+                    <span>CIBIL Score</span>
+                </a>
+                <a class="rail-link" data-page="surveillance" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                        </svg></span>
+                    <span>Surveillance</span>
+                </a>
+                <a class="rail-link" data-page="shadow" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path
+                                d="M12 3v1m0 16v1m-8-9H3m18 0h-1M5.6 5.6l.7.7m12.1-.7-.7.7M5.6 18.4l.7-.7m12.1.7-.7-.7" />
+                            <circle cx="12" cy="12" r="4" />
+                        </svg></span>
+                    <span>Shadow Engine</span>
+                </a>
+            </nav>
+
+            <div class="rail-section-label">INFRASTRUCTURE</div>
+            <nav class="rail-nav">
+                <a class="rail-link" data-page="registry" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M12 6a6 6 0 016 6M12 6a6 6 0 00-6 6" />
+                        </svg></span>
+                    <span>Registry</span>
+                </a>
+                <a class="rail-link" data-page="integrate" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                            <circle cx="8" cy="6" r="2" fill="currentColor" />
+                            <circle cx="16" cy="12" r="2" fill="currentColor" />
+                            <circle cx="10" cy="18" r="2" fill="currentColor" />
+                        </svg></span>
+                    <span>Integrate</span>
+                </a>
+                <a class="rail-link" data-page="policies" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M12 2L3 7v5c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z" />
+                        </svg></span>
+                    <span>Policies</span>
+                </a>
+                <a class="rail-link" data-page="security" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="10" rx="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg></span>
+                    <span>Security</span>
+                    <span class="rail-badge" id="secBadge" style="display:none">0</span>
+                </a>
+                <a class="rail-link" data-page="skills" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                            <path d="M9 7h6M9 11h4" />
+                        </svg></span>
+                    <span>Skills</span>
+                    <span class="rail-badge" id="skillsBadge" style="display:none">0</span>
+                </a>
+                <a class="rail-link" data-page="models" href="#">
+                    <span class="rail-icon"><svg width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M12 2a3 3 0 013 3v2a3 3 0 01-6 0V5a3 3 0 013-3z" />
+                            <path d="M19 10a3 3 0 013 3v0a3 3 0 01-3 3" />
+                            <path d="M5 10a3 3 0 00-3 3v0a3 3 0 003 3" />
+                            <path d="M12 14v4M8 22h8" />
+                        </svg></span>
+                    <span>Models</span>
+                </a>
+            </nav>
+
+            <div class="rail-foot">
+                <div class="ws-indicator">
+                    <span class="ws-dot" id="wsDot"></span>
+                    <span class="ws-label" id="wsLabel">Connecting</span>
+                </div>
+                <div class="rail-status">
+                    <span class="status-pulse"></span>
+                    <span class="status-text">Shield Active</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ═══ MAIN ═══ -->
+        <div class="main">
+            <!-- Topbar -->
+            <header class="topbar">
+                <button class="burger" id="burger">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M3 6h18M3 12h18M3 18h18" />
+                    </svg>
+                </button>
+                <h1 class="topbar-title" id="topTitle">Command Center</h1>
+                <div class="topbar-actions">
+                    <input class="topbar-search" id="globalSearch" type="text" placeholder="Search across Shield..."
+                        spellcheck="false">
+                    <button class="icon-btn" id="refreshBtn" title="Refresh data">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <path d="M1 4v6h6" />
+                            <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+                        </svg>
+                    </button>
+                    <div class="topbar-clock" id="topClock"></div>
+                </div>
+            </header>
+
+            <div class="viewport" id="viewport">
+
+                <!-- ═══════════ PAGE: COMMAND CENTER (OVERVIEW) ═══════════ -->
+                <section class="page active" id="pg-overview">
+                    <!-- Hero Metrics Row -->
+                    <div class="metric-row">
+                        <div class="metric" id="mTotal">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Total Runs</p>
+                            <div class="metric-bar bar-white"></div>
+                        </div>
+                        <div class="metric" id="mAllow">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Allowed</p>
+                            <div class="metric-bar bar-green"></div>
+                        </div>
+                        <div class="metric" id="mDeny">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Denied</p>
+                            <div class="metric-bar bar-red"></div>
+                        </div>
+                        <div class="metric" id="mEscalate">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Escalated</p>
+                            <div class="metric-bar bar-amber"></div>
+                        </div>
+                        <div class="metric" id="mShadow">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Shadow Blocks</p>
+                            <div class="metric-bar bar-purple"></div>
+                        </div>
+                        <div class="metric" id="mDrift">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Drift Alerts</p>
+                            <div class="metric-bar bar-red-dim"></div>
+                        </div>
+                    </div>
+
+                    <!-- Primary Row: Charts + CIBIL widget -->
+                    <div class="grid-3col">
+                        <div class="card span-1">
+                            <div class="card-top">
+                                <h2 class="card-title">Decision Breakdown</h2>
+                            </div>
+                            <div class="card-canvas"><canvas id="chartPie"></canvas></div>
+                        </div>
+                        <div class="card span-1">
+                            <div class="card-top">
+                                <h2 class="card-title">Throughput</h2>
+                                <select id="throughputRange" class="mini-select">
+                                    <option value="1h">1 h</option>
+                                    <option value="24h" selected>24 h</option>
+                                    <option value="7d">7 d</option>
+                                </select>
+                            </div>
+                            <div class="card-canvas"><canvas id="chartLine"></canvas></div>
+                        </div>
+                        <div class="card span-1 card-accent">
+                            <div class="card-top">
+                                <h2 class="card-title">Top Models</h2>
+                                <span class="card-badge">CIBIL</span>
+                            </div>
+                            <div class="card-body" id="cibilWidget">
+                                <div class="cibil-mini-list" id="cibilMiniList">
+                                    <p class="muted">No models tracked yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Posture + Live Feed + Registry -->
+                    <div class="grid-3col">
+                        <div class="card span-1">
+                            <div class="card-top">
+                                <h2 class="card-title">Security Posture</h2>
+                            </div>
+                            <div class="posture-grid" id="postureGrid">
+                                <div class="posture-cell"><span class="pc-val" id="pHoneypot">0</span><span
+                                        class="pc-lbl">Honeypot</span></div>
+                                <div class="posture-cell"><span class="pc-val" id="pInjection">0</span><span
+                                        class="pc-lbl">Injection</span></div>
+                                <div class="posture-cell"><span class="pc-val" id="pChain">0</span><span
+                                        class="pc-lbl">Chain</span></div>
+                                <div class="posture-cell"><span class="pc-val" id="pMemory">0</span><span
+                                        class="pc-lbl">Memory</span></div>
+                                <div class="posture-cell"><span class="pc-val" id="pIntegrity">Valid</span><span
+                                        class="pc-lbl">Audit</span></div>
+                                <div class="posture-cell"><span class="pc-val" id="pQuarantine">0</span><span
+                                        class="pc-lbl">Quarantined</span></div>
+                            </div>
+                        </div>
+                        <div class="card span-1">
+                            <div class="card-top">
+                                <h2 class="card-title">Live Feed</h2>
+                                <span class="pulse-dot"></span>
+                            </div>
+                            <div class="feed" id="liveFeed">
+                                <p class="muted">Waiting for events...</p>
+                            </div>
+                        </div>
+                        <div class="card span-1">
+                            <div class="card-top">
+                                <h2 class="card-title">Connections</h2>
+                                <span class="card-badge">Registry</span>
+                            </div>
+                            <div class="card-body" id="registryWidget">
+                                <div class="registry-mini" id="registryMiniList">
+                                    <p class="muted">No services connected.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: TRACES ═══════════ -->
+                <section class="page" id="pg-traces">
+                    <div class="toolbar">
+                        <div class="toolbar-left">
+                            <select id="fDecision" class="mini-select">
+                                <option value="">All decisions</option>
+                                <option value="ALLOW">Allow</option>
+                                <option value="DENY">Deny</option>
+                                <option value="ESCALATE">Escalate</option>
+                            </select>
+                            <select id="fAgent" class="mini-select">
+                                <option value="">All agents</option>
+                            </select>
+                            <input class="mini-input" id="fAction" placeholder="Filter action..." spellcheck="false">
+                        </div>
+                        <button class="text-btn" id="exportBtn">Export CSV</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="tbl">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Agent</th>
+                                    <th>Action</th>
+                                    <th>Decision</th>
+                                    <th>Reason</th>
+                                    <th>Flags</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: POLICIES ═══════════ -->
+                <section class="page" id="pg-policies">
+                    <div class="toolbar">
+                        <h2 class="card-title">Active Policy Rules</h2>
+                        <button class="text-btn red" id="reloadBtn">Reload Policies</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="tbl">
+                            <thead>
+                                <tr>
+                                    <th>Pattern</th>
+                                    <th>Decision</th>
+                                    <th>Description</th>
+                                    <th>Rate Limit</th>
+                                    <th>Sandbox</th>
+                                    <th>Hits</th>
+                                </tr>
+                            </thead>
+                            <tbody id="polBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: AGENTS ═══════════ -->
+                <section class="page" id="pg-agents">
+                    <div class="agent-grid" id="agentGrid">
+                        <p class="muted">No agents registered yet.</p>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: CIBIL SCORE ═══════════ -->
+                <section class="page" id="pg-cibil">
+                    <div class="toolbar">
+                        <h2 class="card-title">Model CIBIL Score — Intelligence Dashboard</h2>
+                        <button class="text-btn" id="cibilRefresh">Refresh Scores</button>
+                    </div>
+
+                    <!-- Score overview cards -->
+                    <div class="cibil-models-grid" id="cibilModelsGrid">
+                        <p class="muted">Loading model profiles...</p>
+                    </div>
+
+                    <!-- Detailed view (shows when model clicked) -->
+                    <div class="cibil-detail" id="cibilDetail" style="display:none">
+                        <div class="grid-2col">
+                            <div class="card">
+                                <div class="card-top">
+                                    <h2 class="card-title" id="cibilDetailTitle">Model Report</h2>
+                                    <button class="text-btn" id="cibilCloseDetail">Close</button>
+                                </div>
+                                <div class="card-body" id="cibilReportBody">
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-top">
+                                    <h2 class="card-title">Category Breakdown</h2>
+                                </div>
+                                <div class="card-canvas"><canvas id="cibilRadar"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Recommendations</h2>
+                                <span class="card-badge">AI</span>
+                            </div>
+                            <div class="card-body" id="cibilRecommendations"></div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Health Analytics -->
+                    <div class="card" id="pipeHealthCard">
+                        <div class="card-top">
+                            <h2 class="card-title">Pipeline Health Analytics</h2>
+                            <span class="card-badge">Pipelines</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="metric-row metric-row-sm" style="margin-bottom:16px">
+                                <div class="metric mini green" id="phSuccess">
+                                    <p class="metric-num">—</p>
+                                    <p class="metric-label">Success Rate</p>
+                                </div>
+                                <div class="metric mini" id="phTotal">
+                                    <p class="metric-num">0</p>
+                                    <p class="metric-label">Total Runs</p>
+                                </div>
+                                <div class="metric mini amber" id="phAvgTime">
+                                    <p class="metric-num">—</p>
+                                    <p class="metric-label">Avg Duration</p>
+                                </div>
+                                <div class="metric mini" id="phActive">
+                                    <p class="metric-num">0</p>
+                                    <p class="metric-label">Pipelines</p>
+                                </div>
+                            </div>
+                            <div id="pipeHealthGrid"
+                                style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">
+                                <p class="muted">Run pipelines to see health analytics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: SURVEILLANCE ═══════════ -->
+                <section class="page" id="pg-surveillance">
+                    <div class="toolbar">
+                        <h2 class="card-title">Bidirectional Surveillance</h2>
+                        <div class="toolbar-right">
+                            <select id="survFilter" class="mini-select">
+                                <option value="">All Tools</option>
+                            </select>
+                            <button class="text-btn" id="survRefresh">Refresh</button>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Tool Health Monitor</h2>
+                                <span class="pulse-dot green"></span>
+                            </div>
+                            <div class="card-body" id="survToolsGrid">
+                                <p class="muted">No tools being monitored yet.</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Latency Trend</h2>
+                            </div>
+                            <div class="card-canvas"><canvas id="survLatencyChart"></canvas></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Flagged Anomalies</h2>
+                            <select id="survSeverity" class="mini-select">
+                                <option value="">All Severities</option>
+                                <option value="LOW">Low</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HIGH">High</option>
+                                <option value="CRITICAL">Critical</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Tool</th>
+                                        <th>Type</th>
+                                        <th>Severity</th>
+                                        <th>Detail</th>
+                                        <th>Deviation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="survAnomalyBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: SHADOW ENGINE ═══════════ -->
+                <section class="page" id="pg-shadow">
+                    <div class="toolbar">
+                        <h2 class="card-title">Shadow Execution Engine</h2>
+                        <button class="text-btn" id="shadowRefresh">Refresh</button>
+                    </div>
+
+                    <div class="metric-row metric-row-sm">
+                        <div class="metric mini" id="shTotal">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Total Checks</p>
+                        </div>
+                        <div class="metric mini green" id="shProceed">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Proceed</p>
+                        </div>
+                        <div class="metric mini amber" id="shWarn">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Warned</p>
+                        </div>
+                        <div class="metric mini red" id="shEscalate">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Escalated</p>
+                        </div>
+                        <div class="metric mini crimson" id="shBlock">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Blocked</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Recent Shadow Results</h2>
+                            <select id="shadowVerdict" class="mini-select">
+                                <option value="">All Verdicts</option>
+                                <option value="proceed">Proceed</option>
+                                <option value="warn">Warn</option>
+                                <option value="escalate">Escalate</option>
+                                <option value="block">Block</option>
+                            </select>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Tool</th>
+                                        <th>Impact</th>
+                                        <th>Verdict</th>
+                                        <th>Side Effects</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="shadowBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: REGISTRY ═══════════ -->
+                <section class="page" id="pg-registry">
+                    <div class="toolbar">
+                        <h2 class="card-title">Service Registry</h2>
+                        <div class="toolbar-right">
+                            <select id="regCategoryFilter" class="mini-select">
+                                <option value="">All Categories</option>
+                                <option value="database">Database</option>
+                                <option value="messaging">Messaging</option>
+                                <option value="dev_tools">Dev Tools</option>
+                                <option value="storage">Storage</option>
+                                <option value="api">API</option>
+                                <option value="cloud">Cloud</option>
+                            </select>
+                            <button class="btn-primary btn-sm" id="regRefresh">Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Active connections -->
+                    <div class="card" id="regConnectionsCard">
+                        <div class="card-top">
+                            <h2 class="card-title">Active Connections</h2>
+                            <span class="card-count" id="regConnCount">0</span>
+                        </div>
+                        <div class="card-body" id="regConnectionsList">
+                            <p class="muted">No active connections.</p>
+                        </div>
+                    </div>
+
+                    <!-- Connector catalog -->
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Connector Catalog</h2>
+                        </div>
+                        <div class="connector-grid" id="connectorGrid">
+                            <p class="muted">Loading connectors...</p>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div class="card card-accent" id="regSuggestionsCard" style="display:none">
+                        <div class="card-top">
+                            <h2 class="card-title">Suggested Integrations</h2>
+                            <span class="card-badge">AI</span>
+                        </div>
+                        <div class="card-body" id="regSuggestions"></div>
+                    </div>
+
+                    <!-- Connect Modal -->
+                    <div class="modal-overlay" id="connectModal" style="display:none">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2 id="connectModalTitle">Connect Service</h2>
+                                <button class="modal-close" id="connectModalClose">&times;</button>
+                            </div>
+                            <div class="modal-body" id="connectModalBody">
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-secondary" id="connectCancelBtn">Cancel</button>
+                                <button class="btn-primary" id="connectSaveBtn">Connect</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: INTEGRATE ═══════════ -->
+                <section class="page" id="pg-integrate">
+                    <!-- Wizard Steps -->
+                    <div class="wizard-steps" id="wizardSteps">
+                        <div class="wiz-step active" data-step="1"><span class="wiz-num">1</span><span
+                                class="wiz-label">Database</span></div>
+                        <div class="wiz-line"></div>
+                        <div class="wiz-step" data-step="2"><span class="wiz-num">2</span><span class="wiz-label">MCP
+                                Servers</span></div>
+                        <div class="wiz-line"></div>
+                        <div class="wiz-step" data-step="3"><span class="wiz-num">3</span><span
+                                class="wiz-label">Policies</span></div>
+                        <div class="wiz-line"></div>
+                        <div class="wiz-step" data-step="4"><span class="wiz-num">4</span><span
+                                class="wiz-label">Security</span></div>
+                        <div class="wiz-line"></div>
+                        <div class="wiz-step" data-step="5"><span class="wiz-num">5</span><span
+                                class="wiz-label">Verify</span></div>
+                    </div>
+
+                    <!-- Step 1: Database -->
+                    <div class="wiz-panel active" id="wizStep1">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Connect Database</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="help-text">Choose a backend and enter the connection URI.</p>
+                                <div class="form-row">
+                                    <label class="form-label">Backend</label>
+                                    <select id="dbScheme" class="form-select">
+                                        <option value="sqlite">SQLite (local file)</option>
+                                        <option value="postgresql">PostgreSQL</option>
+                                        <option value="mongodb">MongoDB</option>
+                                        <option value="s3">S3 / MinIO</option>
+                                        <option value="oracle">Oracle</option>
+                                    </select>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Connection URI</label>
+                                    <input id="dbUri" class="form-input" type="text"
+                                        placeholder="postgresql://user:pass@host:5432/db" spellcheck="false">
+                                    <span class="form-hint" id="dbHint">e.g.
+                                        postgresql://user:pass@host:5432/dbname</span>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="dbTestBtn">Test Connection</button>
+                                    <span class="test-result" id="dbTestResult"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: MCP Servers -->
+                    <div class="wiz-panel" id="wizStep2">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Link MCP Servers</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="help-text">Connect external MCP tool servers for Shield to proxy and secure.
+                                </p>
+                                <div id="mcpServerList" class="connected-list">
+                                    <p class="muted">No MCP servers connected yet.</p>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Server URL</label>
+                                    <input id="mcpUrl" class="form-input" type="text"
+                                        placeholder="http://localhost:3000/mcp" spellcheck="false">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Server ID</label>
+                                    <input id="mcpId" class="form-input" type="text" placeholder="my-tool-server"
+                                        spellcheck="false">
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="mcpAddBtn">Add Server</button>
+                                    <button class="btn-secondary" id="mcpDiscoverBtn">Discover Tools</button>
+                                </div>
+                                <div id="mcpToolsPreview" class="tools-preview" style="display:none"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Policies -->
+                    <div class="wiz-panel" id="wizStep3">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Configure Policies</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="help-text">Paste YAML policy rules or upload a file.</p>
+                                <div class="form-row">
+                                    <label class="form-label">Policy YAML</label>
+                                    <textarea id="policyYaml" class="form-textarea" rows="12" spellcheck="false"
+                                        placeholder="agent: '*'&#10;default: deny&#10;rules:&#10;  - action: read_*&#10;    decision: allow&#10;    description: Allow reads"></textarea>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="policyValidateBtn">Validate</button>
+                                    <button class="btn-secondary" id="policyApplyBtn">Apply & Reload</button>
+                                    <span class="test-result" id="policyResult"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Security -->
+                    <div class="wiz-panel" id="wizStep4">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Security Modules</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="help-text">Toggle security modules. All enabled by default.</p>
+                                <div class="toggle-grid">
+                                    <div class="toggle-row"><span>Honeypot Detection</span><label class="switch"><input
+                                                type="checkbox" checked data-module="honeypot"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Prompt Injection Guard</span><label
+                                            class="switch"><input type="checkbox" checked
+                                                data-module="prompt_guard"><span class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Chain Analysis</span><label class="switch"><input
+                                                type="checkbox" checked data-module="chain_analyzer"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Memory Firewall</span><label class="switch"><input
+                                                type="checkbox" checked data-module="memory_firewall"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Reputation Engine</span><label class="switch"><input
+                                                type="checkbox" checked data-module="reputation"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Drift Detection</span><label class="switch"><input
+                                                type="checkbox" checked data-module="drift"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Shadow Execution</span><label class="switch"><input
+                                                type="checkbox" checked data-module="shadow"><span
+                                                class="slider"></span></label></div>
+                                    <div class="toggle-row"><span>Surveillance</span><label class="switch"><input
+                                                type="checkbox" checked data-module="surveillance"><span
+                                                class="slider"></span></label></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Verify -->
+                    <div class="wiz-panel" id="wizStep5">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">System Health Check</h2>
+                            </div>
+                            <div class="card-body">
+                                <p class="help-text">Run a full health check to verify everything is connected.</p>
+                                <div id="healthMatrix" class="health-matrix">
+                                    <div class="health-row"><span
+                                            class="health-dot pending"></span><span>Database</span><span
+                                            class="health-val" id="hDb">--</span></div>
+                                    <div class="health-row"><span
+                                            class="health-dot pending"></span><span>Gateway</span><span
+                                            class="health-val" id="hGw">--</span></div>
+                                    <div class="health-row"><span class="health-dot pending"></span><span>Skills
+                                            Engine</span><span class="health-val" id="hSkills">--</span></div>
+                                    <div class="health-row"><span class="health-dot pending"></span><span>Policy
+                                            Engine</span><span class="health-val" id="hPolicy">--</span></div>
+                                    <div class="health-row"><span class="health-dot pending"></span><span>Security
+                                            Modules</span><span class="health-val" id="hSec">--</span></div>
+                                    <div class="health-row"><span class="health-dot pending"></span><span>Shadow
+                                            Engine</span><span class="health-val" id="hShadow">--</span></div>
+                                    <div class="health-row"><span
+                                            class="health-dot pending"></span><span>Surveillance</span><span
+                                            class="health-val" id="hSurv">--</span></div>
+                                    <div class="health-row"><span class="health-dot pending"></span><span>CIBIL
+                                            Engine</span><span class="health-val" id="hCibil">--</span></div>
+                                    <div class="health-row"><span
+                                            class="health-dot pending"></span><span>Registry</span><span
+                                            class="health-val" id="hReg">--</span></div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-primary" id="healthCheckBtn">Run Health Check</button>
+                                    <span class="test-result" id="healthResult"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wizard Nav -->
+                    <div class="wiz-nav">
+                        <button class="btn-secondary" id="wizPrev" disabled>&larr; Previous</button>
+                        <button class="btn-primary" id="wizNext">Next &rarr;</button>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: SECURITY ═══════════ -->
+                <section class="page" id="pg-security">
+                    <div class="tab-row">
+                        <button class="tab active" data-tab="tHoney">Honeypot</button>
+                        <button class="tab" data-tab="tInject">Injection Guard</button>
+                        <button class="tab" data-tab="tChain">Chain Analysis</button>
+                        <button class="tab" data-tab="tMem">Memory Firewall</button>
+                        <button class="tab" data-tab="tNarr">Narratives</button>
+                    </div>
+                    <div class="tab-pane active" id="tHoney">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Honeypot Triggers</h2>
+                            </div>
+                            <div class="card-body" id="honeyBody">
+                                <p class="muted">Clean -- no triggers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tInject">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Injection Alerts</h2>
+                            </div>
+                            <div class="card-body" id="injectBody">
+                                <p class="muted">No injection attempts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tChain">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Chain Violations</h2>
+                            </div>
+                            <div class="card-body" id="chainBody">
+                                <p class="muted">No violations.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tMem">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Memory Firewall</h2>
+                            </div>
+                            <div class="card-body" id="memBody">
+                                <p class="muted">No smuggling detected.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="tNarr">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Security Narrative</h2><button class="text-btn red"
+                                    id="narrBtn">Generate</button>
+                            </div>
+                            <div class="card-body narrative" id="narrBody">
+                                <p class="muted">Click Generate for an AI-written security summary.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: SKILLS ═══════════ -->
+                <section class="page" id="pg-skills">
+                    <div class="toolbar">
+                        <h2 class="card-title">Skills Library</h2>
+                        <div class="toolbar-right">
+                            <button class="btn-secondary" id="skillImportBtn">Import YAML</button>
+                            <button class="btn-primary" id="skillCreateBtn">+ New Skill</button>
+                        </div>
+                    </div>
+
+                    <div class="skills-grid" id="skillsGrid">
+                        <p class="muted">Loading skills...</p>
+                    </div>
+
+                    <!-- Skill Editor Modal -->
+                    <div class="modal-overlay" id="skillModal" style="display:none">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2 id="skillModalTitle">Create Skill</h2>
+                                <button class="modal-close" id="skillModalClose">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <label class="form-label">Name</label>
+                                    <input id="skName" class="form-input" type="text" placeholder="my-skill-name"
+                                        spellcheck="false">
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Description</label>
+                                    <textarea id="skDesc" class="form-input" rows="2"
+                                        placeholder="What this skill does..."></textarea>
+                                </div>
+                                <div class="form-2col">
+                                    <div class="form-row">
+                                        <label class="form-label">Version</label>
+                                        <input id="skVersion" class="form-input" type="text" value="1.0">
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-label">Tags (comma separated)</label>
+                                        <input id="skTags" class="form-input" type="text"
+                                            placeholder="setup, integration">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <label class="form-label">Steps</label>
+                                    <div id="stepsEditor" class="steps-editor"></div>
+                                    <button class="btn-secondary btn-sm" id="addStepBtn">+ Add Step</button>
+                                </div>
+
+                                <div class="form-row">
+                                    <label class="form-label">Permissions</label>
+                                    <div class="form-2col">
+                                        <div class="form-row">
+                                            <label class="form-sublabel">Allowed Tools</label>
+                                            <input id="skAllowed" class="form-input" type="text"
+                                                placeholder="http_request, read_file">
+                                        </div>
+                                        <div class="form-row">
+                                            <label class="form-sublabel">Blocked Tools</label>
+                                            <input id="skBlocked" class="form-input" type="text"
+                                                value="delete_*, admin_*">
+                                        </div>
+                                    </div>
+                                    <div class="toggle-row" style="margin-top:8px">
+                                        <span>Require Approval</span>
+                                        <label class="switch"><input type="checkbox" id="skApproval"><span
+                                                class="slider"></span></label>
+                                    </div>
+                                    <div class="toggle-row">
+                                        <span>Sandbox Mode</span>
+                                        <label class="switch"><input type="checkbox" id="skSandbox" checked><span
+                                                class="slider"></span></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-secondary" id="skillPreviewBtn">Preview YAML</button>
+                                <button class="btn-primary" id="skillSaveBtn">Save Skill</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- YAML Preview Modal -->
+                    <div class="modal-overlay" id="yamlModal" style="display:none">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2>YAML Preview</h2>
+                                <button class="modal-close" id="yamlModalClose">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <pre class="yaml-preview" id="yamlPreviewContent"></pre>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-secondary" id="yamlCopyBtn">Copy to Clipboard</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Import Modal -->
+                    <div class="modal-overlay" id="importModal" style="display:none">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2>Import Skill</h2>
+                                <button class="modal-close" id="importModalClose">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <label class="form-label">Paste YAML content</label>
+                                    <textarea id="importYaml" class="form-textarea" rows="14" spellcheck="false"
+                                        placeholder="name: my-skill&#10;description: ...&#10;steps:&#10;  - title: Step 1&#10;    instruction: ..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-primary" id="importSaveBtn">Import</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: PIPELINES ═══════════ -->
+                <section class="page" id="pg-pipelines">
+                    <div class="toolbar">
+                        <h2 class="card-title">Pipeline Workshop</h2>
+                        <div class="toolbar-right">
+                            <button class="btn-primary btn-sm" id="pipeNewBtn">+ New Pipeline</button>
+                            <button class="btn-secondary btn-sm" id="pipeRefreshBtn">Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Compiler Input -->
+                    <div class="card card-accent" id="pipeCompilerCard">
+                        <div class="card-top">
+                            <h2 class="card-title">🧠 Describe Your Pipeline</h2>
+                            <span class="card-badge">AI Compiler</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="pipe-compile-row" style="display:flex;gap:12px;align-items:center">
+                                <input class="form-input" id="pipeDescription" type="text" style="flex:1"
+                                    placeholder="Monitor GitHub PRs, analyze code quality, post summary to Slack..."
+                                    spellcheck="false">
+                                <button class="btn-primary" id="pipeCompileBtn">Compile →</button>
+                            </div>
+                            <div class="pipe-templates-row" id="pipeTemplatesRow"
+                                style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"></div>
+                        </div>
+                    </div>
+
+                    <!-- Conversational Design Chat -->
+                    <div class="card" id="pipeChatCard" style="max-height:300px;display:flex;flex-direction:column">
+                        <div class="card-top">
+                            <h2 class="card-title">💬 Design Conversation</h2>
+                            <button class="btn-secondary btn-sm" id="pipeChatClearBtn" style="font-size:11px">Clear
+                                Chat</button>
+                        </div>
+                        <div id="pipeChatMessages"
+                            style="flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+                            <div class="pipe-chat-msg ai"><span style="opacity:.5">Describe a workflow and I'll compile
+                                    it into a pipeline. Ask follow-up questions to refine it.</span></div>
+                        </div>
+                        <div
+                            style="padding:8px 16px 12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;gap:8px">
+                            <input class="form-input" id="pipeChatInput" type="text" style="flex:1;font-size:13px"
+                                placeholder="Refine: also add error handling and retry logic..." spellcheck="false">
+                            <button class="btn-primary btn-sm" id="pipeChatSendBtn">Send</button>
+                        </div>
+                    </div>
+
+                    <!-- Main Grid: DAG Canvas + Details -->
+                    <div class="grid-2col" style="gap:16px">
+                        <div class="card" style="min-height:480px; position:relative">
+                            <div class="card-top">
+                                <h2 class="card-title" id="pipeCanvasTitle">Pipeline DAG</h2>
+                                <div style="display:flex;gap:6px">
+                                    <button class="icon-btn" id="pipeZoomIn" title="Zoom In"
+                                        style="width:28px;height:28px;font-size:16px">+</button>
+                                    <button class="icon-btn" id="pipeZoomOut" title="Zoom Out"
+                                        style="width:28px;height:28px;font-size:16px">−</button>
+                                    <button class="icon-btn" id="pipeZoomFit" title="Fit"
+                                        style="width:28px;height:28px;font-size:14px">⊡</button>
+                                    <button class="btn-primary btn-sm" id="pipeRunBtn">▶ Run</button>
+                                </div>
+                            </div>
+                            <div id="pipeCanvasWrap"
+                                style="position:relative;width:100%;height:420px;overflow:hidden;cursor:grab">
+                                <canvas id="pipeCanvas" style="display:block"></canvas>
+                                <div id="pipeEmptyPlaceholder"
+                                    style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+                                    <p class="muted" style="text-align:center">Describe a pipeline above or pick a
+                                        template to get started</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card" style="min-height:480px">
+                            <div class="card-top">
+                                <h2 class="card-title" id="pipeDetailTitle">Step Details</h2>
+                            </div>
+                            <div class="card-body" id="pipeStepDetail">
+                                <p class="muted">Click a node in the DAG to inspect it.</p>
+                            </div>
+                            <div id="pipeInfo"
+                                style="border-top:1px solid rgba(255,255,255,0.06);padding:12px 16px;display:none">
+                                <div style="display:grid;grid-template-columns:80px 1fr;gap:4px 12px;font-size:13px">
+                                    <span style="color:var(--text-dim)">ID</span><span id="pipeInfoId">—</span>
+                                    <span style="color:var(--text-dim)">Steps</span><span id="pipeInfoSteps">—</span>
+                                    <span style="color:var(--text-dim)">Status</span><span id="pipeInfoStatus">—</span>
+                                    <span style="color:var(--text-dim)">Runs</span><span id="pipeInfoRuns">—</span>
+                                    <span style="color:var(--text-dim)">Last Run</span><span id="pipeInfoLast">—</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Saved Pipelines List -->
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Saved Pipelines</h2>
+                            <span class="card-count" id="pipeCount">0</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Steps</th>
+                                        <th>Status</th>
+                                        <th>Runs</th>
+                                        <th>Last Duration</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pipeTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Run History -->
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Run History</h2>
+                            <span class="card-badge">Live</span>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Pipeline</th>
+                                        <th>Steps</th>
+                                        <th>Status</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pipeHistoryBody">
+                                    <tr>
+                                        <td colspan="5" style="text-align:center;color:var(--text-3)">No runs recorded
+                                            this session</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: MODELS ═══════════ -->
+                <section class="page" id="pg-models">
+                    <div class="toolbar">
+                        <h2 class="card-title">AI Model Configuration</h2>
+                        <div class="toolbar-right">
+                            <button class="btn-primary btn-sm" id="modelHealthAllBtn">🩺 Health Check All</button>
+                            <button class="btn-secondary btn-sm" id="modelRefreshBtn">Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="metric-row metric-row-sm">
+                        <div class="metric mini" id="mdlTotal">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Models</p>
+                        </div>
+                        <div class="metric mini green" id="mdlHealthy">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Healthy</p>
+                        </div>
+                        <div class="metric mini amber" id="mdlEnabled">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Enabled</p>
+                        </div>
+                        <div class="metric mini" id="mdlProviders">
+                            <p class="metric-num">0</p>
+                            <p class="metric-label">Providers</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Setup Cards -->
+                    <div class="card card-accent">
+                        <div class="card-top">
+                            <h2 class="card-title">⚡ Quick Setup</h2>
+                            <span class="card-badge">One-Click</span>
+                        </div>
+                        <div class="card-body">
+                            <p style="color:var(--text-2);font-size:13px;margin-bottom:14px">Add a model provider with
+                                sensible defaults. Just paste your API key.</p>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px"
+                                id="quickSetupGrid">
+                                <div class="card" style="padding:16px;cursor:pointer"
+                                    onclick="window._modelQuickSetup('openai')">
+                                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                                        <span style="font-size:24px">🟢</span>
+                                        <div>
+                                            <div style="font-weight:700;color:var(--text-0)">OpenAI</div>
+                                            <div style="font-size:11px;color:var(--text-3)">GPT-4o, GPT-4, GPT-3.5</div>
+                                        </div>
+                                    </div>
+                                    <input class="form-input" id="qsKeyOpenai" type="password" placeholder="sk-..."
+                                        spellcheck="false" style="font-size:12px" onclick="event.stopPropagation()">
+                                </div>
+                                <div class="card" style="padding:16px;cursor:pointer"
+                                    onclick="window._modelQuickSetup('anthropic')">
+                                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                                        <span style="font-size:24px">🟠</span>
+                                        <div>
+                                            <div style="font-weight:700;color:var(--text-0)">Anthropic</div>
+                                            <div style="font-size:11px;color:var(--text-3)">Claude 3.5, Claude 3</div>
+                                        </div>
+                                    </div>
+                                    <input class="form-input" id="qsKeyAnthropic" type="password"
+                                        placeholder="sk-ant-..." spellcheck="false" style="font-size:12px"
+                                        onclick="event.stopPropagation()">
+                                </div>
+                                <div class="card" style="padding:16px;cursor:pointer"
+                                    onclick="window._modelQuickSetup('gemini')">
+                                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                                        <span style="font-size:24px">🔵</span>
+                                        <div>
+                                            <div style="font-weight:700;color:var(--text-0)">Google Gemini</div>
+                                            <div style="font-size:11px;color:var(--text-3)">Gemini 2.0, 1.5 Pro</div>
+                                        </div>
+                                    </div>
+                                    <input class="form-input" id="qsKeyGemini" type="password" placeholder="AIza..."
+                                        spellcheck="false" style="font-size:12px" onclick="event.stopPropagation()">
+                                </div>
+                                <div class="card" style="padding:16px;cursor:pointer"
+                                    onclick="window._modelQuickSetup('ollama')">
+                                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                                        <span style="font-size:24px">🦙</span>
+                                        <div>
+                                            <div style="font-weight:700;color:var(--text-0)">Ollama (Local)</div>
+                                            <div style="font-size:11px;color:var(--text-3)">Llama 3, Mistral, etc.</div>
+                                        </div>
+                                    </div>
+                                    <input class="form-input" id="qsKeyOllama" type="text"
+                                        placeholder="http://localhost:11434" value="http://localhost:11434"
+                                        spellcheck="false" style="font-size:12px" onclick="event.stopPropagation()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configured Models Table -->
+                    <div class="card">
+                        <div class="card-top">
+                            <h2 class="card-title">Configured Models</h2>
+                            <button class="btn-primary btn-sm" id="modelAddBtn">+ Add Model</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="tbl">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Provider</th>
+                                        <th>Model ID</th>
+                                        <th>Tasks</th>
+                                        <th>Status</th>
+                                        <th>Health</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="modelTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Fallback Chain -->
+                    <div class="grid-2col" style="gap:16px">
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Fallback Chain</h2>
+                            </div>
+                            <div class="card-body" id="modelFallbackChain">
+                                <p class="muted">No fallback chain configured. Models will be used based on priority.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-top">
+                                <h2 class="card-title">Task Coverage</h2>
+                            </div>
+                            <div class="card-body" id="modelTaskCoverage">
+                                <p class="muted">Add models to see task coverage.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add/Edit Model Modal -->
+                    <div class="modal-overlay" id="modelModal" style="display:none">
+                        <div class="modal">
+                            <div class="modal-header">
+                                <h2 id="modelModalTitle">Add Model</h2>
+                                <button class="modal-close" id="modelModalClose">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-2col">
+                                    <div class="form-row">
+                                        <label class="form-label">Display Name</label>
+                                        <input id="mdlName" class="form-input" type="text" placeholder="My GPT-4o">
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-label">Provider</label>
+                                        <select id="mdlProvider" class="form-select">
+                                            <option value="openai">OpenAI</option>
+                                            <option value="anthropic">Anthropic</option>
+                                            <option value="gemini">Google Gemini</option>
+                                            <option value="ollama">Ollama (Local)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-2col">
+                                    <div class="form-row">
+                                        <label class="form-label">Model ID</label>
+                                        <input id="mdlModelId" class="form-input" type="text" placeholder="gpt-4o">
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-label">API Key</label>
+                                        <input id="mdlApiKey" class="form-input" type="password" placeholder="sk-..."
+                                            spellcheck="false">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="form-label">Base URL (optional)</label>
+                                    <input id="mdlBaseUrl" class="form-input" type="text"
+                                        placeholder="https://api.openai.com/v1" spellcheck="false">
+                                </div>
+                                <div class="form-2col">
+                                    <div class="form-row">
+                                        <label class="form-label">Task Categories</label>
+                                        <input id="mdlTasks" class="form-input" type="text"
+                                            placeholder="general, code_generation, data_analysis" value="general">
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-label">Priority (0=highest)</label>
+                                        <input id="mdlPriority" class="form-input" type="number" value="0" min="0"
+                                            max="100">
+                                    </div>
+                                </div>
+                                <div class="form-2col">
+                                    <div class="form-row">
+                                        <label class="form-label">Max Tokens</label>
+                                        <input id="mdlMaxTokens" class="form-input" type="number" value="4096" min="1">
+                                    </div>
+                                    <div class="form-row">
+                                        <label class="form-label">Temperature</label>
+                                        <input id="mdlTemp" class="form-input" type="number" value="0.7" min="0" max="2"
+                                            step="0.1">
+                                    </div>
+                                </div>
+                                <div class="toggle-row" style="margin-top:8px">
+                                    <span>Set as Default</span>
+                                    <label class="switch"><input type="checkbox" id="mdlDefault"><span
+                                            class="slider"></span></label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-secondary" id="modelCancelBtn">Cancel</button>
+                                <button class="btn-primary" id="modelSaveBtn">Save Model</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ═══════════ PAGE: ESCALATIONS ═══════════ -->
+                <section class="page" id="pg-escalations">
+                    <div id="escQueue">
+                        <p class="muted">No pending escalations.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toasts" class="toast-stack"></div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+# Shield GPT — Dependencies
+# Install: pip install -r requirements.txt
+
+torch>=2.0.0
+tiktoken>=0.5.0
+numpy>=1.24.0
+tqdm>=4.65.0
+bitsandbytes>=0.41.0

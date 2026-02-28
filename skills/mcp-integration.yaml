@@ -1,0 +1,92 @@
+name: mcp-integration
+description: 'Guide for connecting external MCP (Model Context Protocol) servers to
+  AgentVault. Covers server discovery, tool registration, proxy configuration, and
+  verifying that calls flow through the security pipeline.
+
+  '
+version: '1.0'
+tags:
+- setup
+- mcp
+- integration
+- tools
+author: agentvault
+steps:
+- title: Identify MCP servers to connect
+  instruction: 'Determine which MCP servers the customer wants to proxy through AgentVault.
+    Common examples: file system server, database server, web search server, code
+    execution server, custom business logic servers. Each MCP server exposes tools
+    that agents can call. AgentVault acts as a security proxy between the agent and
+    those servers.
+
+    '
+  tools_needed: []
+  expected_output: List of MCP server URLs to connect
+  on_failure: stop
+  order: 1
+- title: Configure MCP server connections
+  instruction: "Add MCP server configurations. Each server needs:\n  - Server URL\
+    \ (e.g., http://localhost:3000/mcp or stdio command)\n  - Server ID (unique name\
+    \ for this server)\n  - Auth credentials (if required)\nUse the MCP servers API:\
+    \ POST /api/v1/mcp/servers with server config. Alternatively, add to the AgentVault\
+    \ configuration file.\n"
+  tools_needed:
+  - http_request
+  expected_output: MCP server configured and reachable
+  on_failure: retry
+  order: 2
+- title: Discover available tools
+  instruction: 'After connecting, discover the tools exposed by each MCP server. Call
+    GET /api/v1/mcp/tools to list all available tools across all connected servers.
+    Each tool shows: name, description, parameters schema, and which server provides
+    it. Verify the tools you expect are listed.
+
+    '
+  tools_needed:
+  - http_request
+  expected_output: Tool list matches expected MCP server capabilities
+  on_failure: retry
+  order: 3
+- title: Create policies for MCP tools
+  instruction: "Now that tools are discovered, create policy rules to govern them.\
+    \ For each tool, decide: allow, deny, or escalate. Example rules:\n  - action:\
+    \ \"mcp:file[FILTERED]read_file\"\n    decision: allow\n  - action: \"mcp:file[FILTERED]delete_file\"\
+    \n    decision: deny\n  - action: \"mcp:database:execute_query\"\n    decision:\
+    \ escalate\nAdd these to your policy YAML and reload.\n"
+  tools_needed:
+  - write_file
+  - http_request
+  expected_output: Policies created for all discovered MCP tools
+  on_failure: stop
+  order: 4
+- title: Test the full pipeline
+  instruction: 'Send a test action through the gateway to verify the full flow works:
+    POST /api/v1/evaluate with an action that maps to an MCP tool. Check that the
+    action goes through the 10-step security pipeline: Honeypot → Injection Scan →
+    Chain Analysis → Policy → Reputation Gate → Drift Detection → Sandbox → Memory
+    Firewall → Audit → Reputation Update. Verify in the dashboard Traces page that
+    the action appears with all security checks logged.
+
+    '
+  tools_needed:
+  - http_request
+  expected_output: Test action processed through full security pipeline
+  on_failure: stop
+  order: 5
+permissions:
+  max_execution_time: 600
+  allowed_tools:
+  - http_request
+  - read_file
+  - write_file
+  blocked_tools:
+  - delete_*
+  - admin_*
+  - drop_*
+  require_approval: false
+  max_retries: 3
+  sandbox_mode: true
+created_at: '2026-02-25T20:30:12.221309'
+updated_at: '2026-02-25T20:30:12.221309'
+content_hash: a1958eaeb5f2b203
+enabled: true

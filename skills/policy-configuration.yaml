@@ -1,0 +1,87 @@
+name: policy-configuration
+description: 'Guide for configuring AgentVault security policies. Covers creating
+  YAML policy files, defining rules with actions and decisions, setting up rate limits,
+  sandbox constraints, and advanced features like semantic matching and honeypots.
+
+  '
+version: '1.0'
+tags:
+- setup
+- security
+- policies
+- onboarding
+author: agentvault
+steps:
+- title: Understand the policy structure
+  instruction: "AgentVault policies are YAML files with this structure:\n  agent:\
+    \ \"*\"  (or specific agent ID)\n  default: deny  (or allow)\n  description: \"\
+    Policy description\"\n  rules: [list of action rules]\nEach rule has: action (name/glob/regex),\
+    \ decision (allow/deny/escalate), description, and optional log_level (standard/critical).\
+    \ The default policy is at policies/default.yaml.\n"
+  tools_needed:
+  - read_file
+  expected_output: Customer understands policy YAML structure
+  on_failure: stop
+  order: 1
+- title: Define action rules
+  instruction: "Create rules for the actions the agent should be able to perform.\
+    \ Examples:\n  - action: \"read_file\"\n    decision: allow\n    description:\
+    \ \"Allow reading files\"\n  - action: \"delete_*\"\n    decision: deny\n    description:\
+    \ \"Block all delete operations\"\n  - action: \"deploy_.*\"\n    decision: escalate\n\
+    \    description: \"Require human approval for deployments\"\nUse exact names,\
+    \ glob patterns (delete_*), or regex (deploy_.*).\n"
+  tools_needed:
+  - write_file
+  expected_output: Policy rules defined in YAML
+  on_failure: stop
+  order: 2
+- title: Configure rate limits
+  instruction: "Add rate limiting to prevent abuse. Under the policy, add:\n  rate_limits:\n\
+    \    window: 60  (seconds)\n    max_actions: 100\n    per_agent: true\nThis limits\
+    \ each agent to 100 actions per minute.\n"
+  tools_needed:
+  - write_file
+  expected_output: Rate limits configured
+  on_failure: skip
+  order: 3
+- title: Enable advanced security features
+  instruction: "Add optional security configurations:\n  honeypot:\n    enabled: true\n\
+    \    tools: [\"secret_admin_panel\", \"internal_debug\"]\n  semantic_matching:\n\
+    \    enabled: true\n  chain_analysis:\n    max_depth: 5\n  prompt_guard:\n   \
+    \ sensitivity: high\n  memory_firewall:\n    enabled: true\n    max_context_tokens:\
+    \ 50000\n"
+  tools_needed:
+  - write_file
+  expected_output: Advanced security features configured
+  on_failure: skip
+  order: 4
+- title: Validate and apply the policy
+  instruction: 'Use the validation API to check the policy before applying: POST /api/v1/config/policy/validate
+    with the YAML content. If validation passes, save the file and reload: POST /api/v1/policies/reload
+    Check the dashboard Policies page to confirm rules are active.
+
+    '
+  tools_needed:
+  - http_request
+  - write_file
+  expected_output: Policy validated and applied successfully
+  on_failure: stop
+  order: 5
+permissions:
+  max_execution_time: 300
+  allowed_tools:
+  - read_file
+  - write_file
+  - http_request
+  blocked_tools:
+  - delete_*
+  - admin_*
+  - drop_*
+  - run_command
+  require_approval: false
+  max_retries: 3
+  sandbox_mode: true
+created_at: '2026-02-25T20:30:12.238268'
+updated_at: '2026-02-25T20:30:12.238268'
+content_hash: 87090d2ce5bc52d3
+enabled: true

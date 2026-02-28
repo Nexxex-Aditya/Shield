@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  # ── Shield API (Python Backend) ──
+  shield-api:
+    build: .
+    container_name: shield-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - shield_data:/app/data
+      - ./pipelines:/app/pipelines
+      - ./policies:/app/policies
+      - ./skills:/app/skills
+    environment:
+      - DB_URI=sqlite+aiosqlite:///data/shield.db
+      - POLICY_PATH=policies/default_policy.yaml
+      - PIPELINES_DIR=pipelines
+      - SKILLS_DIR=skills
+      # Uncomment and set your API keys:
+      # - OPENAI_API_KEY=sk-...
+      # - ANTHROPIC_API_KEY=sk-ant-...
+      # - GOOGLE_API_KEY=AIza...
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ── Shield Web (Next.js Frontend) ──
+  shield-web:
+    build:
+      context: .
+      dockerfile: shield-web/Dockerfile
+    container_name: shield-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SHIELD_API_URL=http://shield-api:8000/api/v1
+    restart: unless-stopped
+    depends_on:
+      shield-api:
+        condition: service_healthy
+
+volumes:
+  shield_data:

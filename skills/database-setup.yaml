@@ -1,0 +1,91 @@
+name: database-setup
+description: 'Step-by-step guide for connecting AgentVault to any supported database
+  backend. Covers URI construction, connection testing, health verification, and migration
+  from the default SQLite database.
+
+  '
+version: '1.0'
+tags:
+- setup
+- database
+- onboarding
+- infrastructure
+author: agentvault
+steps:
+- title: Identify the target database
+  instruction: 'Determine which database backend the customer wants to use. AgentVault
+    supports: SQLite (default, local file), PostgreSQL (AWS RDS, Supabase, Azure,
+    GCP Cloud SQL), MongoDB (Atlas, DocumentDB, CosmosDB), S3 (append-only audit log),
+    and Oracle (Cloud, RDS, on-premise). Ask the customer which one they need.
+
+    '
+  tools_needed: []
+  expected_output: Database type identified (e.g., postgresql)
+  on_failure: stop
+  order: 1
+- title: Construct the connection URI
+  instruction: "Build the connection URI based on the customer's database type. Format\
+    \ examples:\n  SQLite:      sqlite:///path/to/file.db  OR  just  mydata.db\n \
+    \ PostgreSQL:  postgresql://user:password@host:5432/dbname\n  MongoDB:     mongodb://user:password@host:27017/dbname\
+    \  OR  mongodb+srv://...\n  S3:          s3://bucket-name/prefix\n  Oracle:  \
+    \    oracle://user:password@host:1521/service_name\nEnsure credentials are correct\
+    \ and the host is reachable.\n"
+  tools_needed: []
+  expected_output: Valid connection URI string
+  on_failure: stop
+  order: 2
+- title: Test the connection
+  instruction: 'Use the AgentVault config API to test the connection before applying
+    it. Send a POST request to /api/v1/config/database/test with the URI. The response
+    will include connection status, latency, and backend details. If the test fails,
+    check credentials, network access, and firewall rules.
+
+    '
+  tools_needed:
+  - http_request
+  expected_output: 'Connection test returns ok: true with latency'
+  on_failure: retry
+  order: 3
+- title: Set the environment variable
+  instruction: 'Set the AGENTVAULT_DB environment variable to the connection URI.
+    On Linux/Mac: export AGENTVAULT_DB="postgresql://user:pass@host:5432/db" On Windows:   set
+    AGENTVAULT_DB=postgresql://user:pass@host:5432/db For Docker:   add -e AGENTVAULT_DB=...
+    to the docker run command For production, use a secrets manager (AWS Secrets Manager,
+    Vault, etc.)
+
+    '
+  tools_needed:
+  - run_command
+  expected_output: Environment variable set
+  on_failure: stop
+  order: 4
+- title: Restart AgentVault and verify
+  instruction: 'Restart the AgentVault server so it picks up the new database URI.
+    The startup logs should show the provider being auto-detected and connected. Verify
+    by hitting GET /api/v1/config/database/health to confirm the new backend is active
+    with a healthy status.
+
+    '
+  tools_needed:
+  - run_command
+  - http_request
+  expected_output: Server starts with new backend, health check passes
+  on_failure: stop
+  order: 5
+permissions:
+  max_execution_time: 300
+  allowed_tools:
+  - http_request
+  - run_command
+  - read_file
+  blocked_tools:
+  - delete_*
+  - admin_*
+  - drop_*
+  require_approval: false
+  max_retries: 3
+  sandbox_mode: true
+created_at: '2026-02-25T20:30:12.204687'
+updated_at: '2026-02-25T20:30:12.204687'
+content_hash: 6c11ea99a010cbf7
+enabled: true

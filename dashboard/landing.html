@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shield Command — Intelligent Operations Platform</title>
+    <meta name="description"
+        content="Shield Command: AI-powered automation platform. Design, build, and run production workflows with visual pipeline editing, multi-model AI, and enterprise security.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        :root {
+            /* Antigravity Palette */
+            --bg: #000000;
+            --bg-2: #0a0a0a;
+            --bg-3: #121212;
+            --text: #ffffff;
+            --text-2: #a1a1aa;
+            --text-3: #71717a;
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.1);
+            --blue: #2563eb;
+            --blue-glow: rgba(37, 99, 235, 0.1);
+            --green: #22c55e;
+            --amber: #f59e0b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden
+        }
+
+        a {
+            color: var(--red);
+            text-decoration: none
+        }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 40px 20px
+        }
+
+        .hero::before {
+            display: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border: 1px solid rgba(220, 38, 38, .3);
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--red);
+            background: rgba(220, 38, 38, .06);
+            margin-bottom: 24px;
+            animation: fadeIn .6s ease
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 900;
+            letter-spacing: -.04em;
+            line-height: 1.05;
+            max-width: 800px;
+            color: var(--text);
+            animation: fadeIn .8s ease
+        }
+
+        .hero p {
+            font-size: clamp(16px, 2vw, 20px);
+            color: var(--text-2);
+            max-width: 640px;
+            margin: 20px auto 32px;
+            animation: fadeIn 1s ease
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeIn 1.2s ease
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .btn-red {
+            background: var(--blue);
+            color: #fff
+        }
+
+        .btn-red:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--bg-3)
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--text-3);
+            background: var(--bg-2)
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 20px
+        }
+
+        .section-title {
+            font-size: clamp(28px, 4vw, 44px);
+            font-weight: 800;
+            letter-spacing: -.03em;
+            text-align: center;
+            margin-bottom: 12px
+        }
+
+        .section-sub {
+            font-size: 16px;
+            color: var(--text-2);
+            text-align: center;
+            max-width: 560px;
+            margin: 0 auto 48px
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto
+        }
+
+        /* Feature Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px
+        }
+
+        .feat {
+            background: var(--bg-2);
+            border: 1px solid rgba(255, 255, 255, .05);
+            border-radius: 16px;
+            padding: 28px;
+            transition: all .25s
+        }
+
+        .feat:hover {
+            border-color: var(--blue);
+        }
+
+        .feat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 16px
+        }
+
+        .feat h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px
+        }
+
+        .feat p {
+            font-size: 14px;
+            color: var(--text-3);
+            line-height: 1.6
+        }
+
+        .feat-red .feat-icon {
+            background: var(--red-glow);
+            color: var(--red)
+        }
+
+        .feat-purple .feat-icon {
+            background: var(--purple-glow);
+            color: var(--purple)
+        }
+
+        .feat-green .feat-icon {
+            background: rgba(34, 197, 94, .1);
+            color: var(--green)
+        }
+
+        .feat-blue .feat-icon {
+            background: rgba(59, 130, 246, .1);
+            color: var(--blue)
+        }
+
+        .feat-amber .feat-icon {
+            background: rgba(245, 158, 11, .1);
+            color: var(--amber)
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(255, 255, 255, .05);
+            border-bottom: 1px solid rgba(255, 255, 255, .05)
+        }
+
+        .stat {
+            text-align: center
+        }
+
+        .stat-num {
+            font-size: 48px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-3);
+            margin-top: 4px
+        }
+
+        /* Architecture */
+        .arch {
+            background: var(--bg-2);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 16px;
+            padding: 32px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: var(--text-3);
+            line-height: 1.8;
+            white-space: pre-wrap;
+            max-width: 700px;
+            margin: 0 auto
+        }
+
+        /* CLI Preview */
+        .cli-preview {
+            background: var(--bg-2);
+            border: 1px solid rgba(255, 255, 255, .06);
+            border-radius: 16px;
+            padding: 24px 28px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 2;
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .cli-prompt {
+            color: var(--green)
+        }
+
+        .cli-cmd {
+            color: var(--text)
+        }
+
+        .cli-comment {
+            color: var(--text-3)
+        }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 80px 20px
+        }
+
+        .cta h2 {
+            font-size: clamp(28px, 4vw, 40px);
+            font-weight: 800;
+            margin-bottom: 12px
+        }
+
+        .cta p {
+            color: var(--text-2);
+            font-size: 16px;
+            margin-bottom: 28px
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text-3);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, .04)
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--bg);
+            border-bottom: 1px solid rgba(255, 255, 255, .1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px
+        }
+
+        .nav-logo {
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: -.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            font-size: 13px;
+            color: var(--text-2)
+        }
+
+        .nav-links a:hover {
+            color: var(--text)
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(16px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        @media(max-width:640px) {
+            .stats {
+                gap: 24px
+            }
+
+            .nav-links {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-logo">🛡️ Shield Command</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#cli">CLI</a>
+            <a href="/static/index.html">Dashboard →</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-badge">🚀 Now with Visual Pipeline Editor + Multi-Model AI</div>
+        <h1>Automate Any Operation. Intelligently.</h1>
+        <p>Shield Command is the AI-powered operations platform that lets you design, build, and run production
+            workflows — with visual pipeline editing, multi-model AI routing, and enterprise-grade security.</p>
+        <div class="hero-btns">
+            <a href="/static/index.html" class="btn btn-red">Open Dashboard</a>
+            <a href="#cli" class="btn btn-ghost">Quick Start →</a>
+        </div>
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-num">60+</div>
+            <div class="stat-label">API Endpoints</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">27</div>
+            <div class="stat-label">Connector Actions</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">5</div>
+            <div class="stat-label">AI Providers</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">12</div>
+            <div class="stat-label">Security Layers</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">98</div>
+            <div class="stat-label">Tests Passing</div>
+        </div>
+    </div>
+
+    <section id="features">
+        <div class="container">
+            <div class="section-title">Everything You Need to Automate</div>
+            <p class="section-sub">From pipeline design to execution monitoring — one platform handles it all.</p>
+            <div class="features">
+                <div class="feat feat-red">
+                    <div class="feat-icon">🔧</div>
+                    <h3>Visual Pipeline Editor</h3>
+                    <p>Canvas-based DAG editor with zoom, pan, click-to-inspect, and color-coded nodes by step type.
+                        Design complex workflows visually.</p>
+                </div>
+                <div class="feat feat-purple">
+                    <div class="feat-icon">💬</div>
+                    <h3>Conversational Design</h3>
+                    <p>Describe what you want in plain English. Our AI compiles it into an executable pipeline. Iterate
+                        with follow-up messages.</p>
+                </div>
+                <div class="feat feat-green">
+                    <div class="feat-icon">🤖</div>
+                    <h3>Multi-Model AI</h3>
+                    <p>OpenAI, Anthropic, Gemini, Ollama — configure any provider. Task-based routing, fallback chains,
+                        encrypted key storage.</p>
+                </div>
+                <div class="feat feat-blue">
+                    <div class="feat-icon">🔌</div>
+                    <h3>27 Connector Actions</h3>
+                    <p>GitHub, Slack, PostgreSQL, Email, S3 — real connectors with real API calls. Auto-routed through
+                        the security pipeline.</p>
+                </div>
+                <div class="feat feat-amber">
+                    <div class="feat-icon">📡</div>
+                    <h3>Real-Time Monitoring</h3>
+                    <p>WebSocket-powered live updates. Watch DAG nodes change color as steps complete. Run history with
+                        duration tracking.</p>
+                </div>
+                <div class="feat feat-red">
+                    <div class="feat-icon">🛡️</div>
+                    <h3>12-Layer Security</h3>
+                    <p>Policy engine, audit chain, rate limiting, sandboxing, shadow execution, honeypots, drift
+                        detection, CIBIL trust scoring.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" style="background:var(--bg-2)">
+        <div class="container">
+            <div class="section-title">Production Architecture</div>
+            <p class="section-sub">Built for scale. Every tool call passes through 12 security checkpoints before
+                execution.</p>
+            <div class="arch">┌──────────────────────────────────────────────────────┐
+                │ Dashboard (Vanilla JS) │
+                │ Overview · Pipelines · Models · CIBIL · Security │
+                ├──────────────────────────────────────────────────────┤
+                │ FastAPI Server │
+                │ REST API (60+) · WebSocket · Static Files │
+                ├──────────────────────────────────────────────────────┤
+                │ Core Engine │
+                │ MCP Gateway · Policy Engine · Audit Chain │
+                │ Pipeline Compiler/Runner · Model Registry │
+                │ Connector Executor · Shadow Engine · CIBIL Scoring │
+                ├──────────────────────────────────────────────────────┤
+                │ Data Layer │
+                │ SQLite/PostgreSQL · Fernet Encryption · YAML Store │
+                └──────────────────────────────────────────────────────┘</div>
+        </div>
+    </section>
+
+    <section id="cli">
+        <div class="container">
+            <div class="section-title">Get Started in 60 Seconds</div>
+            <p class="section-sub">From zero to running pipelines with three commands.</p>
+            <div class="cli-preview">
+                <span class="cli-comment"># Initialize project</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">python shield_cli.py init my-project</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">cd my-project</span><br><br>
+                <span class="cli-comment"># Add your AI model</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">python shield_cli.py models add openai
+                    sk-your-key</span><br><br>
+                <span class="cli-comment"># Compile a pipeline from description</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">python shield_cli.py compile "Monitor GitHub PRs
+                    and post summaries to Slack"</span><br><br>
+                <span class="cli-comment"># Start the server + dashboard</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">python shield_cli.py server</span><br>
+                <span class="cli-comment"># → http://localhost:8000</span><br><br>
+                <span class="cli-comment"># Or deploy with Docker</span><br>
+                <span class="cli-prompt">$ </span><span class="cli-cmd">python shield_cli.py deploy --build
+                    --detach</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta">
+        <h2>Ready to Automate?</h2>
+        <p>Open the dashboard and start building your first pipeline.</p>
+        <div class="hero-btns">
+            <a href="/static/index.html" class="btn btn-red">Open Dashboard</a>
+            <a href="https://github.com" class="btn btn-ghost">View on GitHub →</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>🛡️ Shield Command — Intelligent Middleware Platform for Autonomous Systems</p>
+    </footer>
+
+</body>
+
+</html>
